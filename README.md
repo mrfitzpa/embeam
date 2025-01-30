@@ -7,7 +7,7 @@
 [![Conda-Forge Version](https://img.shields.io/conda/vn/conda-forge/embeam.svg)](https://anaconda.org/conda-forge/embeam)
 [![License](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-`embeam` is a Python library for for modelling beams and lenses in electron
+`embeam` is a Python library for modelling beams and lenses in electron
 microscopy.
 
 Visit the `embeam` [website](https://mrfitzpa.github.io/embeam) for a web version
