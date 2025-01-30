@@ -67,7 +67,7 @@ __all__ = ["Wavefunction",
 
 class _SoftAperture():
     def __init__(self, discretized_obj_core_attrs):
-        self.d_k_xy_vec = np.array(discretized_obj_core_attrs["pixel_size"])
+        self._d_k_xy_vec = np.array(discretized_obj_core_attrs["pixel_size"])
 
         probe_model_params = \
             discretized_obj_core_attrs["probe_model_params"]
@@ -202,9 +202,9 @@ def _check_and_convert_deep_copy(params):
 
 
 _module_alias = \
-    embeam.stem.probe
+    embeam.coherent
 _default_probe_model_params = \
-    _module_alias._default_probe_model_params
+    None
 _default_pixel_size = \
     2*(0.01,)
 _default_viewer_dims_in_pixels = \
@@ -388,7 +388,7 @@ class Wavefunction(fancytypes.PreSerializableAndUpdatable):
         self_core_attrs = self.get_core_attrs(deep_copy=False)
         probe_model_params = self_core_attrs["probe_model_params"]
 
-        azimuthally_symmetric = probe_model_params.is_azimuthally_symmetric
+        is_azimuthally_symmetric = probe_model_params.is_azimuthally_symmetric
         self._is_azimuthally_symmetric = is_azimuthally_symmetric
 
         self._signal = None
@@ -500,10 +500,10 @@ class Wavefunction(fancytypes.PreSerializableAndUpdatable):
         k_xy_max = soft_aperture._k_xy_max
         k_xy_upper_limit = k_xy_max + 0.5*np.sqrt(d_k_x*d_k_x + d_k_y*d_k_y)
 
-        n_x_i = min(int(np.floor((N_x//2)-k_xy_upper_limit/dk_x)), 0)
-        n_x_f = max(int(np.ceil((N_x//2)+k_xy_upper_limit/dk_x)+1), N_x)
-        n_y_i = min(int(np.floor((N_y-1)//2-k_xy_upper_limit/dk_y)), 0)
-        n_y_f = max(int(np.ceil((N_y-1)//2+k_xy_upper_limit/dk_y)+1), N_y)
+        n_x_i = min(int(np.floor((N_x//2)-k_xy_upper_limit/d_k_x)), 0)
+        n_x_f = max(int(np.ceil((N_x//2)+k_xy_upper_limit/d_k_x)+1), N_x)
+        n_y_i = min(int(np.floor((N_y-1)//2-k_xy_upper_limit/d_k_y)), 0)
+        n_y_f = max(int(np.ceil((N_y-1)//2+k_xy_upper_limit/d_k_y)+1), N_y)
 
         k_x_vec = embeam.stem.probe.discretized._k_x_vec(**kwargs)
         k_y_vec = embeam.stem.probe.discretized._k_y_vec(**kwargs)
@@ -908,13 +908,6 @@ class Intensity(fancytypes.PreSerializableAndUpdatable):
         kwargs = discretized_wavefunction.core_attrs
         kwargs["skip_validation_and_conversion"] = True
         discretized_intensity = cls(**kwargs)
-
-        discretized_wavefunction_signal = \
-            discretized_wavefunction.get_signal(deep_copy=False)
-        
-        kwargs = {"input_signal": discretized_wavefunction_signal,
-                  "title": "k-Space Probe Fractional Intensity"}
-        discretized_intensity._signal = empix.abs_sq(**kwargs)
 
         return discretized_intensity
 

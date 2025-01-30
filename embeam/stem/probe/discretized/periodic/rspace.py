@@ -153,24 +153,24 @@ def _de_pre_serialize_viewer_dims_in_pixels(serializable_rep):
 def _check_and_convert_deep_copy(params):
     module_alias = embeam.stem.probe.discretized.kspace
     func_alias = module_alias._check_and_convert_deep_copy
-    deep_copy = func_alias(**kwargs)
+    deep_copy = func_alias(params)
 
     return deep_copy
 
 
 
 _module_alias = \
-    embeam.stem.probe.discretized.symmetric.rspace
+    embeam.coherent
 _default_probe_model_params = \
-    _module_alias._default_probe_model_params
+    None
 _default_pixel_size = \
-    _module_alias._default_pixel_size
+    2*(0.01,)
 _default_viewer_dims_in_pixels = \
-    _module_alias._default_viewer_dims_in_pixels
+    2*(512,)
 _default_skip_validation_and_conversion = \
     _module_alias._default_skip_validation_and_conversion
 _default_deep_copy = \
-    _module_alias._default_deep_copy
+    True
 
 
 
@@ -336,7 +336,7 @@ class Wavefunction(fancytypes.PreSerializableAndUpdatable):
         
         probe_model_params = self_core_attrs["probe_model_params"]
 
-        azimuthally_symmetric = probe_model_params.is_azimuthally_symmetric
+        is_azimuthally_symmetric = probe_model_params.is_azimuthally_symmetric
         self._is_azimuthally_symmetric = is_azimuthally_symmetric
 
         self._signal = None
@@ -445,7 +445,7 @@ class Wavefunction(fancytypes.PreSerializableAndUpdatable):
         temp_signal = self._discretized_kspace_wavefunction_signal()
         temp_signal_data = np.fft.ifftshift(temp_signal.data[::-1, :])
         temp_signal_data = np.fft.ifft2(temp_signal_data, norm="forward")
-        signal_data = np.fft.fftshift(temp_signal_data)[::-1, :]*dk_x*dk_y
+        signal_data = np.fft.fftshift(temp_signal_data)[::-1, :]*d_k_x*d_k_y
         
         return signal_data
 

@@ -135,10 +135,10 @@ def _update_kspace_signal_axes(signal, discretized_obj_core_attrs):
     for axis_idx in range(len(units)):
         axis = hyperspy.axes.UniformDataAxis(size=sizes[axis_idx],
                                              scale=scales[axis_idx],
-                                             offset=offsets[axis_idx],
-                                             units=units[axis_idx])
+                                             offset=offsets[axis_idx])
         signal.axes_manager[axis_idx].update_from(axis)
         signal.axes_manager[axis_idx].name = axes_labels[axis_idx]
+        signal.axes_manager[axis_idx].units = units[axis_idx]
             
     return None
 
@@ -178,7 +178,9 @@ def _r_samples(discretized_obj_core_attrs):
 def _r_grid(discretized_obj_core_attrs):
     x_vec = _x_vec(discretized_obj_core_attrs)
     y_vec = _y_vec(discretized_obj_core_attrs)
-    x_grid, y_grid = np.meshgrid(x_vec, y_vec)
+    pair_of_1d_coord_arrays = (x_vec, y_vec)
+
+    x_grid, y_grid = np.meshgrid(*pair_of_1d_coord_arrays, indexing="xy")
     r_grid = np.sqrt(x_grid*x_grid + y_grid*y_grid)
 
     return r_grid
@@ -202,10 +204,10 @@ def _update_rspace_signal_axes(signal, discretized_obj_core_attrs):
     for axis_idx in range(len(units)):
         axis = hyperspy.axes.UniformDataAxis(size=sizes[axis_idx],
                                              scale=scales[axis_idx],
-                                             offset=offsets[axis_idx],
-                                             units=units[axis_idx])
+                                             offset=offsets[axis_idx])
         signal.axes_manager[axis_idx].update_from(axis)
         signal.axes_manager[axis_idx].name = axes_labels[axis_idx]
+        signal.axes_manager[axis_idx].units = units[axis_idx]
             
     return None
 

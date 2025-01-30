@@ -146,7 +146,7 @@ def _de_pre_serialize_convergence_semiangle(serializable_rep):
 def _check_and_convert_defocal_offset_supersampling(params):
     obj_name = "defocal_offset_supersampling"
     kwargs = {"obj": params[obj_name], "obj_name": obj_name}
-    defocal_offset_supersampling = czekitout.convert.to_positive_float(**kwargs)
+    defocal_offset_supersampling = czekitout.convert.to_positive_int(**kwargs)
 
     return defocal_offset_supersampling
 
@@ -421,7 +421,7 @@ class ModelParams(fancytypes.PreSerializableAndUpdatable):
 
     def execute_post_core_attrs_update_actions(self):
         self._update_sigma_f()
-        self._is_coherent = (self._sigma_f == 0.0)
+        self._is_coherent = (self._sigma_f == 0.0).item()
         self._update_gauss_hermite_points_and_weights()
         self._update_is_azimuthally_symmetric()
 
@@ -430,7 +430,7 @@ class ModelParams(fancytypes.PreSerializableAndUpdatable):
 
 
     def _update_gauss_hermite_points_and_weights(self):
-        if self._coherent:
+        if self._is_coherent:
             self._gauss_hermite_points = np.array([0])
             self._gauss_hermite_weights = np.sqrt([np.pi])
         else:

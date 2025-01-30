@@ -80,7 +80,7 @@ def _check_and_convert_symmetric_coherent_probe_model_params(params):
     module_alias = \
         embeam.stem.probe
     func_alias = \
-        module_alias._check_and_symmetric_convert_coherent_probe_model_params
+        module_alias._check_and_convert_symmetric_coherent_probe_model_params
     probe_model_params = \
         func_alias(params)
 
@@ -166,24 +166,24 @@ def _de_pre_serialize_viewer_dims_in_pixels(serializable_rep):
 def _check_and_convert_deep_copy(params):
     module_alias = embeam.stem.probe.discretized.kspace
     func_alias = module_alias._check_and_convert_deep_copy
-    deep_copy = func_alias(**kwargs)
+    deep_copy = func_alias(params)
 
     return deep_copy
 
 
 
 _module_alias = \
-    embeam.stem.probe.discretized.kspace
+    embeam.coherent
 _default_probe_model_params = \
-    _module_alias._default_probe_model_params
+    None
 _default_pixel_size = \
-    _module_alias._default_pixel_size
+    2*(0.01,)
 _default_viewer_dims_in_pixels = \
-    _module_alias._default_viewer_dims_in_pixels
+    2*(512,)
 _default_skip_validation_and_conversion = \
     _module_alias._default_skip_validation_and_conversion
 _default_deep_copy = \
-    _module_alias._default_deep_copy
+    True
 
 
 
@@ -701,7 +701,7 @@ class Intensity(fancytypes.PreSerializableAndUpdatable):
         metadata = {"General": {"title": "r-Space Probe Fractional Intensity"}, 
                     "Signal": dict()}
 
-        signal = hyperspy.signals.Signal2D(data=self._calc_signal_data,
+        signal = hyperspy.signals.Signal2D(data=self._calc_signal_data(),
                                            metadata=metadata)
 
         module_alias = embeam.stem.probe.discretized
@@ -746,7 +746,7 @@ class Intensity(fancytypes.PreSerializableAndUpdatable):
             kwargs = {"discretized_obj_core_attrs": self_core_attrs}
             r_grid = embeam.stem.probe.discretized._r_grid(**kwargs)
         
-            signal_data = p_interp(r_grid) 
+            signal_data = p_interp(r_grid)
         
         return signal_data
 

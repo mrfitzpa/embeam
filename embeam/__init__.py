@@ -135,8 +135,6 @@ def wavelength(beam_energy=\
 
 
 def _wavelength(beam_energy):
-    embeam_constants = constants()
-
     V = beam_energy * 1000  # Applied beam voltage, in units of volts.
     m_e = embeam.constants.m_e()
     e = embeam.constants.e()

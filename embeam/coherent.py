@@ -370,7 +370,7 @@ class Aberration(fancytypes.PreSerializableAndUpdatable):
 
 
 def _check_and_convert_beam_energy(params):
-    module_alias = embeam.gun
+    module_alias = embeam
     func_alias = module_alias._check_and_convert_beam_energy
     beam_energy = func_alias(params)
 
@@ -400,6 +400,7 @@ def _check_and_convert_coherent_aberrations(params):
     current_func_name = "_check_and_convert_coherent_aberrations"
 
     try:
+        coherent_aberrations = tuple()
         mn_pairs = tuple()
 
         for coherent_aberration in obj:
@@ -410,7 +411,7 @@ def _check_and_convert_coherent_aberrations(params):
                       "accepted_types": accepted_types}
             czekitout.check.if_instance_of_any_accepted_types(**kwargs)
 
-            kwargs = obj.get_core_attrs(deep_copy=False)
+            kwargs = coherent_aberration.get_core_attrs(deep_copy=False)
             coherent_aberration = accepted_types[0](**kwargs)
 
             coherent_aberration_core_attrs = \
@@ -547,7 +548,7 @@ def _check_and_convert_real_numpy_array(params):
     try:
         kwargs = {"obj": obj,
                   "obj_name": name_of_alias_of_real_numpy_array}
-        obj = czekitout.convert.to_real_numpy_array(**kwargs)    
+        real_numpy_array = czekitout.convert.to_real_numpy_array(**kwargs)
     except:
         unformatted_err_msg = globals()[current_func_name+"_err_msg_1"]
         err_msg = unformatted_err_msg.format(name_of_alias_of_real_numpy_array)

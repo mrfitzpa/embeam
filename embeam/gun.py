@@ -31,6 +31,11 @@ import fancytypes
 
 
 
+# For recycling default values of parameters.
+import embeam
+
+
+
 ##################################
 ## Define classes and functions ##
 ##################################
@@ -112,9 +117,11 @@ def _de_pre_serialize_accel_voltage_spread(serializable_rep):
 
 
 
-_default_mean_beam_energy = _default_beam_energy
+_module_alias = embeam
+_default_mean_beam_energy = 80
 _default_intrinsic_energy_spread = 0
 _default_accel_voltage_spread = 0
+_default_skip_validation_and_conversion = False
 
 
 

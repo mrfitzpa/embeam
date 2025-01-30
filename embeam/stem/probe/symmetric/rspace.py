@@ -58,7 +58,7 @@ def _check_and_convert_symmetric_coherent_probe_model_params(params):
     module_alias = \
         embeam.stem.probe
     func_alias = \
-        module_alias._check_and_symmetric_convert_coherent_probe_model_params
+        module_alias._check_and_convert_symmetric_coherent_probe_model_params
     probe_model_params = \
         func_alias(params)
 
@@ -94,18 +94,25 @@ def _check_and_convert_cartesian_coords(params):
 
 
 
-_module_alias_1 = \
-    embeam.stem.probe
-_module_alias_2 = \
+def _check_and_convert_skip_validation_and_conversion(params):
+    module_alias = embeam
+    func_alias = module_alias._check_and_convert_skip_validation_and_conversion
+    skip_validation_and_conversion = func_alias(params)
+
+    return skip_validation_and_conversion
+
+
+
+_module_alias = \
     embeam.coherent
 _default_probe_model_params = \
-    _module_alias_1._default_probe_model_params
+    None
 _default_x = \
-    _module_alias_2._default_k_x
+    _module_alias._default_k_x
 _default_y = \
-    _module_alias_2._default_k_y
+    _module_alias._default_k_y
 _default_skip_validation_and_conversion = \
-    _module_alias_1._default_skip_validation_and_conversion
+    _module_alias._default_skip_validation_and_conversion
 
 
 
@@ -371,7 +378,7 @@ class Wavefunction(fancytypes.PreSerializableAndUpdatable):
         temp = N*np.ceil(phase_deviation._eval(**kwargs)/2/np.pi)
         
         max_num_integration_subintervals = \
-            N*np.ceil(k_xy_max*r_xy_elem))
+            N*np.ceil(k_xy_max*r_xy_elem)
         max_num_integration_subintervals = \
             np.maximum(max_num_integration_subintervals, temp)
         max_num_integration_subintervals = \
@@ -396,11 +403,9 @@ class Wavefunction(fancytypes.PreSerializableAndUpdatable):
 
 
     def _integrand(self, r_xy_elem, k_xy_elem):
-        kwargs = {"k_x": k_xy_elem,
-                  "k_y": 0,
-                  "skip_validation_and_conversion": True}
+        kwargs = {"k_x": k_xy_elem, "k_y": 0}
         result = ((2*np.pi) * k_xy_elem
-                  * self._kspace_wavefunction._eval(**kwargs)
+                  * self._kspace_wavefunction._eval_with_heaviside(**kwargs)
                   * scipy.special.jv(0, 2*np.pi*k_xy_elem*r_xy_elem))
     
         return result
@@ -495,14 +500,20 @@ class Intensity(fancytypes.PreSerializableAndUpdatable):
         copies or conversions are made in this case.
 
     """
-    _validation_and_conversion_funcs = \
+    ctor_param_names = ("probe_model_params",)
+    kwargs = {"namespace_as_dict": globals(),
+              "ctor_param_names": ctor_param_names}
+
+    _validation_and_conversion_funcs_ = \
         {"probe_model_params": _check_and_convert_symmetric_probe_model_params}
+    _pre_serialization_funcs_ = \
+        fancytypes.return_pre_serialization_funcs(**kwargs)
+    _de_pre_serialization_funcs_ = \
+        fancytypes.return_de_pre_serialization_funcs(**kwargs)
 
-    _pre_serialization_funcs = \
-        {"probe_model_params": _pre_serialize_probe_model_params}
+    del ctor_param_names, kwargs
 
-    _de_pre_serialization_funcs = \
-        {"probe_model_params": _de_pre_serialize_probe_model_params}
+    
 
     def __init__(self,
                  probe_model_params=\
@@ -537,6 +548,8 @@ class Intensity(fancytypes.PreSerializableAndUpdatable):
         gauss_hermite_points = probe_model_params._gauss_hermite_points
         self._gauss_hermite_weights = probe_model_params._gauss_hermite_weights
 
+        probe_model_params_core_attrs = \
+            probe_model_params.get_core_attrs(deep_copy=False)
         gun_model_params = \
             probe_model_params_core_attrs["gun_model_params"]
 
@@ -668,10 +681,10 @@ class Intensity(fancytypes.PreSerializableAndUpdatable):
     def _eval(self, x, y):
         zip_obj = zip(self._gauss_hermite_weights, self._rspace_wavefunctions)
 
-        result = np.zeros_like(x)
+        result = np.zeros_like(x).astype(float)
         for w_f_l, rspace_wavefunction in zip_obj:
             kwargs = {"x": x, "y": y}
-            temp = np.abs(rspace_wavefunction._eval(**kwargs))
+            temp = np.abs(rspace_wavefunction._eval(**kwargs)).astype(float)
             result += w_f_l*temp*temp
         result /= np.sqrt(np.pi)
 

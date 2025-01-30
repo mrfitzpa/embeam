@@ -81,11 +81,11 @@ def _check_and_convert_discretized_rspace_intensity(params):
 
     discretized_rspace_intensity = obj
 
-    return beam_energy
+    return discretized_rspace_intensity
 
 
 
-def _check_and_convert_rise(rise):
+def _check_and_convert_rise(params):
     obj_name = "rise"
     kwargs = {"obj": params[obj_name], "obj_name": obj_name}
 
@@ -344,17 +344,16 @@ def _rise_distance(discretized_rspace_intensity, rise):
         S_inv_at_100_minus_eta = UnivariateSpline(x=x_vec,
                                                   y=S-(100-eta),
                                                   s=0).roots()[0]
-        result = S_inv_at_100_minus_eta - S_inv_at_eta
+        result = (S_inv_at_100_minus_eta - S_inv_at_eta).item()
     else:
-        result = [None] * len(rise)
+        result = tuple()
         for idx in range(len(rise)):
             eta = (100 - rise[idx]) / 2
             S_inv_at_eta = UnivariateSpline(x=x_vec, y=S-eta, s=0).roots()[0]
             S_inv_at_100_minus_eta = UnivariateSpline(x=x_vec,
                                                       y=S-(100-eta),
                                                       s=0).roots()[0]
-            result[idx] = S_inv_at_100_minus_eta - S_inv_at_eta
-        result = tuple(result)
+            result += ((S_inv_at_100_minus_eta - S_inv_at_eta).item(),)
 
     return result
 
@@ -366,7 +365,7 @@ def _F_bar_2d_data(discretized_rspace_intensity):
     probe_model_params = \
         discretized_obj_core_attrs["probe_model_params"]
 
-    if probe_model_params.azimuthally_symmetric:
+    if probe_model_params.is_azimuthally_symmetric:
         discretized_rspace_intensity_signal = \
             discretized_rspace_intensity.get_signal(deep_copy=False)
         F_bar_2d_data = \
@@ -420,7 +419,7 @@ def _interpolated_F_bar_1d(discretized_rspace_intensity):
 
 
 
-def _check_and_convert_signal_to_noise_ratio(signal_to_noise_ratio):
+def _check_and_convert_signal_to_noise_ratio(params):
     obj_name = "signal_to_noise_ratio"
     kwargs = {"obj": params[obj_name], "obj_name": obj_name}
 
@@ -624,12 +623,17 @@ def _information(discretized_rspace_intensity, signal_to_noise_ratio):
     tau = _optical_transfer_function(discretized_rspace_intensity)
 
     if isinstance(signal_to_noise_ratio, float):
-        result = _R_inf(tau, signal_to_noise_ratio, k_xy_max)
+        kwargs = {"tau": tau,
+                  "signal_to_noise_ratio": signal_to_noise_ratio,
+                  "k_xy_max": k_xy_max}
+        result = _R_inf(**kwargs).item()
     else:
-        result = [None] * len(signal_to_noise_ratio)
+        result = tuple()
         for idx in range(len(signal_to_noise_ratio)):
-            result[idx] = _R_inf(tau, signal_to_noise_ratio[idx], k_xy_max)
-        result = tuple(result)
+            kwargs = {"tau": tau,
+                      "signal_to_noise_ratio": signal_to_noise_ratio[idx],
+                      "k_xy_max": k_xy_max}
+            result += (_R_inf(**kwargs).item(),)
 
     return result
 
@@ -644,7 +648,7 @@ def _k_xy_max(discretized_rspace_intensity):
     soft_aperture = \
         embeam.stem.probe.discretized.kspace._SoftAperture(**kwargs)
     k_xy_max = \
-        soft_aperture.k_xy_max
+        soft_aperture._k_xy_max
 
     return k_xy_max
 
@@ -677,9 +681,10 @@ def _optical_transfer_function(discretized_rspace_intensity):
     offsets = (k_x_vec[0], k_y_vec[0])
     units = ("1/Å", "1/Å")
 
-    if abs(scales[0]+scales[1]) < 1e-10:
-        scales = (scales[0], -scales[0])
-        
+    scales = ((scales[0], -scales[0])
+              if abs(scales[0]+scales[1]) < 1e-10
+              else scales)
+
     for axis_idx in range(len(units)):
         name = axes_labels[axis_idx]
         axis = hyperspy.axes.UniformDataAxis(size=sizes[axis_idx],

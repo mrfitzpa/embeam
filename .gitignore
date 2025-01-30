@@ -1,18 +1,33 @@
-# Ignore backups.
-*~
-
 # Ignore select directories.
 __pycache__/
 .ipynb_checkpoints/
+.tox/
+htmlcov/
+dist/
+docs/_autosummary/
+docs/_build/
+pages/
 
 # Ignore select files.
+.coverage
+.python-version
+embeam/version.py
+tests/coverage.json
+
+# Ignore generated output coverage files.
+tests/coverage*
+tests/.coverage*
 
 # Ignore .pyc files.
 *.pyc
 
+# Ignore JSON files.
+*.json
+
 # Ignore backup files.
 \#*#
 *.bak
+*~
 
 # Ignore pip install build files.
 build/
@@ -26,3 +41,6 @@ slurm-*.out
 *.ipynb
 !basic_usage.ipynb
 !probe_profile_vs_defocus.ipynb
+
+# Ignore .h5 data files.
+*.h5

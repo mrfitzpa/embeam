@@ -85,18 +85,25 @@ def _check_and_convert_cartesian_coords(params):
 
 
 
-_module_alias_1 = \
-    embeam.stem.probe
-_module_alias_2 = \
+def _check_and_convert_skip_validation_and_conversion(params):
+    module_alias = embeam
+    func_alias = module_alias._check_and_convert_skip_validation_and_conversion
+    skip_validation_and_conversion = func_alias(params)
+
+    return skip_validation_and_conversion
+
+
+
+_module_alias = \
     embeam.coherent
 _default_probe_model_params = \
-    _module_alias_1._default_probe_model_params
+    None
 _default_k_x = \
-    _module_alias_2._default_k_x
+    _module_alias._default_k_x
 _default_k_y = \
-    _module_alias_2._default_k_y
+    _module_alias._default_k_y
 _default_skip_validation_and_conversion = \
-    _module_alias_1._default_skip_validation_and_conversion
+    _module_alias._default_skip_validation_and_conversion
 
 
 
@@ -568,15 +575,6 @@ class Intensity(fancytypes.PreSerializableAndUpdatable):
     def _eval_with_heaviside(self, k_x, k_y):
         kspace_wavefunction = self._kspace_wavefunction
         temp = np.abs(kspace_wavefunction._eval_with_heaviside(k_x, k_y))
-        result = temp * temp
-        
-        return result
-
-
-
-    def _eval_without_heaviside(self, k_x, k_y):
-        kspace_wavefunction = self._kspace_wavefunction
-        temp = np.abs(kspace_wavefunction._eval_without_heaviside(k_x, k_y))
         result = temp * temp
         
         return result
