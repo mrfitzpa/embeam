@@ -325,8 +325,10 @@ def _rise_distance(discretized_rspace_intensity, rise):
     
     d_x = x_vec[1] - x_vec[0]
     d_y = -(y_vec[1] - y_vec[0])
+
+    trapezoid = np.trapezoid if hasattr(np, "trapezoid") else np.trapz
     
-    integrate_F_bar_2d_wrt_y_data = d_y * np.trapz(F_bar_2d_data, axis=0)
+    integrate_F_bar_2d_wrt_y_data = d_y * trapezoid(F_bar_2d_data, axis=0)
     
     S = np.zeros([x_vec.size])
     for x_idx in range(x_vec.size):
