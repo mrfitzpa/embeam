@@ -82,11 +82,11 @@ Uninstalling ``embeam``
 -----------------------
 
 If ``embeam`` was installed using ``pip``, then to uninstall, run the following
-command from the root of the repository::
+command::
 
   pip uninstall embeam
 
 If ``embeam`` was installed using ``conda``, then to uninstall, run the
-following command from the root of the repository::
+following command::
 
   conda remove embeam
