@@ -15,12 +15,12 @@
 
 
 
-# The current script will run all of the unit tests of `empix` and measure the
+# The current script will run all of the unit tests of `embeam` and measure the
 # code coverage resulting from running said unit tests.
 #
 # To run this script correctly, first you must create or activate an environment
-# that has `empix` installed, along with all of the dependencies requried to run
-# the unit tests and measure code coverage. See the root-level README for
+# that has `embeam` installed, along with all of the dependencies requried to
+# run the unit tests and measure code coverage. See the root-level README for
 # installation instructions.
 
 
