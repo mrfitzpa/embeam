@@ -47,8 +47,8 @@ systems you could open e.g. an Anaconda Prompt as an administrator.
 #### Installing `embeam` using `pip`
 
 Before installing `embeam`, make sure that you have activated the (virtual)
-environment in which you intend to install said package. After which, simply
-change into the root of the repository, and run the following command:
+environment in which you intend to install said package. After which, simply run
+the following command:
 
     pip install embeam
 
@@ -106,12 +106,12 @@ The above command will install the latest stable version of `embeam`.
 ### Uninstalling `embeam`
 
 If `embeam` was installed using `pip`, then to uninstall, run the following
-command from the root of the repository:
+command:
 
     pip uninstall embeam
 
 If `embeam` was installed using `conda`, then to uninstall, run the following
-command from the root of the repository:
+command:
 
     conda remove embeam
 
