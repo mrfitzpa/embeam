@@ -144,7 +144,7 @@ def _wavelength(beam_energy):
     result = (h
               / np.sqrt(1 + e * V / 2 / m_e / c / c)
               / np.sqrt(2 * m_e * e * V)
-              * 1.0e10)
+              * 1.0e10).item()
 
     return result
 
